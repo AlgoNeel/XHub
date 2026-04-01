@@ -15,6 +15,7 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .xhub-orange { color: #ff9900; }
@@ -25,18 +26,21 @@
             border-bottom: 1px solid #333;
         }
 
+        /* Video Card & Hover */
         .video-card {
             background-color: #1b1b1b;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: all 0.2s ease;
         }
 
-        .video-card:hover {
-            transform: scale(1.02);
-            background-color: #262626;
+        @media (min-width: 768px) {
+            .video-card:hover {
+                transform: scale(1.02);
+                background-color: #262626;
+            }
         }
 
         .thumbnail-container {
-            height: 180px;
+            aspect-ratio: 16 / 9;
             overflow: hidden;
             position: relative;
             background: #111;
@@ -46,13 +50,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: blur(8px) brightness(0.7); /* থাম্বনেইল ব্লার করার জন্য */
+            filter: blur(10px) brightness(0.6);
             transition: filter 0.3s;
         }
 
         .play-icon {
-            width: 55px;
-            height: 55px;
+            width: 45px;
+            height: 45px;
             background: rgba(0,0,0,0.6);
             border-radius: 50%;
             display: flex;
@@ -66,9 +70,11 @@
             z-index: 10;
         }
 
+        /* Modals */
         #roast-modal, #access-denied-modal, #auth-modal {
             display: none;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
 
         .animate-pop {
@@ -76,77 +82,73 @@
         }
 
         @keyframes pop {
-            from { transform: scale(0.8); opacity: 0; }
+            from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
-        .nav-item:hover {
-            background-color: #333;
-            padding-left: 10px;
+        /* Mobile Bottom Nav */
+        .bottom-nav {
+            background-color: #1b1b1b;
+            border-top: 1px solid #333;
         }
 
         .auth-input {
-            background: #000;
+            background: #0d0d0d;
             border: 1px solid #333;
             color: white;
-            transition: border-color 0.3s;
-        }
-
-        .auth-input:focus {
-            border-color: #ff9900;
-            outline: none;
+            font-size: 16px; /* Prevents auto-zoom on iOS */
         }
     </style>
 </head>
-<body>
+<body class="pb-20 md:pb-0">
 
-    <!-- Xhub Header -->
-    <header class="header p-3 sticky top-0 z-40">
+    <!-- Header -->
+    <header class="header p-3 sticky top-0 z-40 shadow-xl">
         <div class="max-w-[1400px] mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-1 font-black text-3xl tracking-tighter cursor-pointer" onclick="location.reload()">
+            <div class="flex items-center gap-1 font-black text-2xl md:text-3xl tracking-tighter cursor-pointer" onclick="location.reload()">
                 <span class="text-white italic">X</span>
-                <span class="xhub-bg-orange text-black px-2 py-0.5 rounded-md italic">hub</span>
-                <span class="text-white ml-2 text-[10px] font-bold border border-gray-600 px-1 rounded self-center uppercase">PREMIUM</span>
+                <span class="xhub-bg-orange text-black px-1.5 py-0.5 rounded italic">hub</span>
+                <span class="text-white ml-2 text-[8px] md:text-[10px] font-bold border border-gray-600 px-1 rounded self-center uppercase">PREMIUM</span>
             </div>
             
-            <div class="hidden lg:flex flex-1 mx-12">
-                <div onclick="showAccessDenied()" class="w-full bg-[#000] border border-[#333] rounded px-4 py-2 text-sm text-gray-500 flex items-center justify-between cursor-text">
-                    <span>Search for videos, models, or channels...</span>
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-6 text-sm font-bold">
-                <span onclick="showAccessDenied()" class="xhub-orange cursor-pointer hover:underline">UPLOAD</span>
-                <button onclick="openAuth('login')" class="bg-[#333] px-4 py-1.5 rounded hover:bg-[#444] transition">LOGIN</button>
-                <button onclick="openAuth('signup')" class="xhub-bg-orange text-black px-4 py-1.5 rounded hover:brightness-110 transition">SIGN UP</button>
+            <div class="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-bold">
+                <button onclick="openAuth('login')" class="bg-[#333] px-3 py-1.5 md:px-4 md:py-2 rounded hover:bg-[#444] transition active:scale-95">LOGIN</button>
+                <button onclick="openAuth('signup')" class="xhub-bg-orange text-black px-3 py-1.5 md:px-4 md:py-2 rounded hover:brightness-110 transition active:scale-95">SIGN UP</button>
             </div>
         </div>
     </header>
 
     <div class="max-w-[1400px] mx-auto flex">
-        <!-- Sidebar -->
-        <aside class="hidden md:block w-56 p-4 border-r border-[#222] min-h-screen">
-            <nav class="space-y-1">
-                <div class="text-gray-500 font-bold text-[10px] uppercase mb-4 tracking-widest">Main Menu</div>
-                <div onclick="location.reload()" class="nav-item flex items-center gap-3 text-orange-500 font-bold p-3 rounded-lg cursor-pointer bg-white/5 transition-all"><span class="text-lg">🏠</span> Home</div>
-                <div onclick="showAccessDenied()" class="nav-item flex items-center gap-3 text-gray-400 font-medium p-3 rounded-lg cursor-pointer transition-all"><span class="text-lg">🔥</span> Trending</div>
-                <div onclick="showAccessDenied()" class="nav-item flex items-center gap-3 text-gray-400 font-medium p-3 rounded-lg cursor-pointer transition-all"><span class="text-lg">📺</span> Channels</div>
-                <div onclick="openRoast()" class="nav-item flex items-center gap-3 text-white font-bold p-3 rounded-lg cursor-pointer bg-gradient-to-r from-orange-600 to-red-600 transition-all"><span class="text-lg">💎</span> VIP Access</div>
+        <!-- Sidebar (Desktop only) -->
+        <aside class="hidden md:block w-64 p-5 border-r border-[#222] min-h-screen sticky top-16 h-[calc(100vh-64px)]">
+            <nav class="space-y-2">
+                <div class="text-gray-500 font-bold text-[10px] uppercase mb-4 tracking-widest">Discover</div>
+                <div onclick="location.reload()" class="flex items-center gap-3 text-orange-500 font-bold p-3 rounded-xl cursor-pointer bg-white/5"><span class="text-lg">🏠</span> Home</div>
+                <div onclick="showAccessDenied()" class="flex items-center gap-3 text-gray-400 font-medium p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-all"><span class="text-lg">🔥</span> Trending</div>
+                <div onclick="showAccessDenied()" class="flex items-center gap-3 text-gray-400 font-medium p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-all"><span class="text-lg">📺</span> Channels</div>
+                <div onclick="openRoast()" class="flex items-center gap-3 text-white font-bold p-3 rounded-xl cursor-pointer bg-gradient-to-r from-orange-600 to-red-600 shadow-lg shadow-orange-900/20"><span class="text-lg">💎</span> VIP Access</div>
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-6">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-black flex items-center gap-3">
-                    <span class="w-1.5 h-8 xhub-bg-orange rounded-full"></span>
-                    Hot Recommended Videos
+        <main class="flex-1 p-4 md:p-8">
+            <!-- Search Bar (Mobile/Desktop Visible) -->
+            <div class="mb-6">
+                <div onclick="showAccessDenied()" class="w-full bg-[#111] border border-[#333] rounded-full px-5 py-3 text-sm text-gray-500 flex items-center justify-between cursor-pointer active:bg-[#222]">
+                    <span>Search videos...</span>
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg md:text-2xl font-black flex items-center gap-2 italic">
+                    <span class="w-1 h-6 md:w-1.5 md:h-8 xhub-bg-orange rounded-full"></span>
+                    RECOMMENDED FOR YOU
                 </h2>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Video Cards -->
+            <!-- Video Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 <script>
                     const titles = [
                         "Exclusive Private Shoot: Full Version [Member Request]",
@@ -159,7 +161,6 @@
                         "VIP Only: Midnight Special Uncensored Content"
                     ];
 
-                    // ড্রামাটিক থাম্বনেইল ইমেজের জন্য কিছু রেন্ডম সোর্স
                     const imgUrls = [
                         "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=500&auto=format&fit=crop",
                         "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=500&auto=format&fit=crop",
@@ -173,17 +174,21 @@
 
                     for(let i=0; i<8; i++) {
                         document.write(`
-                            <div onclick="openRoast()" class="video-card rounded-xl overflow-hidden cursor-pointer shadow-2xl group">
+                            <div onclick="openRoast()" class="video-card rounded-2xl overflow-hidden cursor-pointer shadow-lg group active:bg-[#222]">
                                 <div class="thumbnail-container">
                                     <img src="${imgUrls[i]}" alt="Thumbnail" class="thumbnail-img">
-                                    <div class="play-icon group-hover:scale-110 transition">
-                                        <svg class="w-7 h-7 xhub-orange ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.5 3.268a.5.5 0 01.75-.433l11.5 6.732a.5.5 0 010 .866L5.25 17.165a.5.5 0 01-.75-.433V3.268z"></path></svg>
+                                    <div class="play-icon group-hover:scale-110 transition shadow-lg">
+                                        <svg class="w-6 h-6 xhub-orange ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.5 3.268a.5.5 0 01.75-.433l11.5 6.732a.5.5 0 010 .866L5.25 17.165a.5.5 0 01-.75-.433V3.268z"></path></svg>
                                     </div>
-                                    <span class="absolute bottom-2 right-2 bg-black/90 text-[10px] px-1.5 py-0.5 rounded font-bold">${Math.floor(Math.random()*20)+5}:${Math.floor(Math.random()*50)+10}</span>
+                                    <span class="absolute bottom-2 right-2 bg-black/90 text-[10px] px-1.5 py-0.5 rounded font-bold">${Math.floor(Math.random()*15)+5}:${Math.floor(Math.random()*50)+10}</span>
+                                    <div class="absolute top-2 left-2 xhub-bg-orange text-black text-[8px] px-1.5 py-0.5 rounded font-black uppercase">HD</div>
                                 </div>
                                 <div class="p-3">
                                     <h3 class="font-bold text-sm mb-1 leading-tight line-clamp-2 group-hover:xhub-orange transition">${titles[i]}</h3>
-                                    <p class="text-[11px] text-gray-500">${(Math.random()*5).toFixed(1)}M views • 99% Rating</p>
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-[11px] text-gray-500">${(Math.random()*3 + 1).toFixed(1)}M views</p>
+                                        <span class="text-[11px] text-green-500 font-bold">${Math.floor(Math.random()*15)+85}%</span>
+                                    </div>
                                 </div>
                             </div>
                         `);
@@ -193,35 +198,50 @@
         </main>
     </div>
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bottom-nav z-50 flex justify-around items-center h-16 px-2">
+        <button onclick="location.reload()" class="flex flex-col items-center gap-1 text-orange-500">
+            <span class="text-xl">🏠</span>
+            <span class="text-[10px] font-bold">Home</span>
+        </button>
+        <button onclick="showAccessDenied()" class="flex flex-col items-center gap-1 text-gray-500">
+            <span class="text-xl">🔥</span>
+            <span class="text-[10px] font-bold">Trending</span>
+        </button>
+        <button onclick="openRoast()" class="flex flex-col items-center gap-1 text-gray-500">
+            <div class="bg-gradient-to-tr from-orange-600 to-red-600 p-2 rounded-full -mt-8 border-4 border-black shadow-lg">
+                <span class="text-xl text-white">💎</span>
+            </div>
+            <span class="text-[10px] font-bold text-white mt-1">VIP</span>
+        </button>
+        <button onclick="showAccessDenied()" class="flex flex-col items-center gap-1 text-gray-500">
+            <span class="text-xl">📺</span>
+            <span class="text-[10px] font-bold">Channels</span>
+        </button>
+        <button onclick="openAuth('login')" class="flex flex-col items-center gap-1 text-gray-500">
+            <span class="text-xl">👤</span>
+            <span class="text-[10px] font-bold">Profile</span>
+        </button>
+    </nav>
+
     <!-- AUTH MODAL -->
-    <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95">
-        <div class="animate-pop bg-[#1b1b1b] border border-gray-800 p-8 rounded-3xl max-w-md w-full relative">
-            <button onclick="closeAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            
-            <div class="text-center mb-8">
-                <div class="flex justify-center items-center gap-1 font-black text-3xl tracking-tighter mb-2">
-                    <span class="text-white italic">X</span>
-                    <span class="xhub-bg-orange text-black px-2 py-0.5 rounded-md italic">hub</span>
+    <div id="auth-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/95">
+        <div class="animate-pop bg-[#1b1b1b] border border-gray-800 p-6 md:p-8 rounded-3xl max-w-md w-full relative">
+            <button onclick="closeAuth()" class="absolute top-4 right-4 text-gray-500 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <div class="text-center mb-6">
+                <div class="flex justify-center items-center gap-1 font-black text-2xl tracking-tighter mb-2">
+                    <span class="text-white italic">X</span><span class="xhub-bg-orange text-black px-2 py-0.5 rounded-md italic">hub</span>
                 </div>
                 <h3 id="auth-title" class="text-xl font-bold text-white">Login to Premium</h3>
-                <p class="text-gray-500 text-sm mt-2">Access exclusive content instantly</p>
+                <p class="text-gray-500 text-xs mt-1 italic">Access requested hidden archives</p>
             </div>
-
             <form onsubmit="event.preventDefault(); openRoast();" class="space-y-4">
-                <div id="signup-fields" class="hidden space-y-4">
-                    <input type="text" placeholder="Full Name" class="auth-input w-full p-4 rounded-xl text-sm">
-                </div>
+                <div id="signup-fields" class="hidden"><input type="text" placeholder="Username" class="auth-input w-full p-4 rounded-xl text-sm mb-4"></div>
                 <input type="email" placeholder="Email Address" class="auth-input w-full p-4 rounded-xl text-sm" required>
                 <input type="password" placeholder="Password" class="auth-input w-full p-4 rounded-xl text-sm" required>
-                
-                <button type="submit" id="auth-submit-btn" class="w-full xhub-bg-orange text-black font-black py-4 rounded-xl hover:brightness-110 transition uppercase tracking-widest text-sm mt-4">
-                    Login
-                </button>
+                <button type="submit" id="auth-submit-btn" class="w-full xhub-bg-orange text-black font-black py-4 rounded-xl hover:brightness-110 active:scale-95 transition uppercase tracking-widest text-sm mt-4 shadow-lg shadow-orange-500/20">Login</button>
             </form>
-
-            <div class="mt-6 text-center text-sm">
+            <div class="mt-6 text-center text-xs">
                 <span class="text-gray-500" id="auth-switch-text">Don't have an account?</span>
                 <button onclick="toggleAuthMode()" class="xhub-orange font-bold ml-1 hover:underline" id="auth-switch-btn">Sign Up</button>
             </div>
@@ -229,28 +249,26 @@
     </div>
 
     <!-- ACCESS DENIED MODAL -->
-    <div id="access-denied-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90">
+    <div id="access-denied-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90">
         <div class="animate-pop bg-[#1b1b1b] border border-gray-800 p-8 rounded-2xl max-w-sm w-full text-center">
             <div class="mb-4 text-orange-500"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
-            <h3 class="text-xl font-bold mb-2">Premium Required</h3>
-            <p class="text-gray-400 text-sm mb-6">এই সেকশনটি শুধুমাত্র ভিআইপি মেম্বারদের জন্য। লগইন করুন।</p>
-            <button onclick="openAuth('login')" class="w-full xhub-bg-orange text-black font-bold py-3 rounded-lg uppercase text-xs">Login Now</button>
+            <h3 class="text-xl font-bold mb-2">Member Restricted</h3>
+            <p class="text-gray-400 text-sm mb-6">এই ভিডিওটি শুধুমাত্র প্রিমিয়াম ইউজারদের জন্য। ফ্রি ট্রায়াল পেতে লগইন করুন।</p>
+            <button onclick="openAuth('login')" class="w-full xhub-bg-orange text-black font-bold py-4 rounded-xl uppercase text-xs shadow-lg shadow-orange-500/10">Login to Watch</button>
         </div>
     </div>
 
     <!-- MAIN ROAST MODAL -->
-    <div id="roast-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/98">
-        <div class="animate-pop bg-[#111] border-2 border-[#ff9900] p-10 rounded-3xl max-w-lg w-full text-center shadow-[0_0_100px_rgba(255,153,0,0.15)] relative overflow-hidden">
-            <div class="mb-8 flex justify-center">
-                <div class="bg-[#ff9900] p-5 rounded-full shadow-lg shadow-orange-500/20"><svg class="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+    <div id="roast-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/98">
+        <div class="animate-pop bg-[#111] border-2 border-[#ff9900] p-6 md:p-10 rounded-3xl max-w-lg w-full text-center shadow-[0_0_100px_rgba(255,153,0,0.25)] relative overflow-hidden">
+            <div class="mb-6 flex justify-center"><div class="bg-[#ff9900] p-4 rounded-full shadow-lg shadow-orange-500/20"><svg class="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div></div>
+            <h2 class="text-3xl md:text-4xl font-black mb-6 text-white uppercase tracking-tighter italic leading-tight">ধরা খেয়ে গেছিস <span class="xhub-orange">দোস্ত!</span></h2>
+            <div class="space-y-4 md:space-y-6 text-gray-300">
+                <p class="text-lg md:text-xl font-medium leading-relaxed">ভেবেছিলি লুকিয়ে লুকিয়ে দেখবি আর কেউ জানবে না? <br>তোর ইমেইল কিন্তু আমার কাছে চলে আসছে! 😂</p>
+                <div class="bg-white/5 p-5 md:p-6 rounded-2xl border border-white/10 text-sm md:text-base italic text-gray-400 leading-relaxed">"জীবনটা এতো সস্তা না যে ইন্টারনেটে নোংরামি করে কাটিয়ে দিবি। একটু পড়াশোনা করে মানুষ হ!"</div>
+                <div class="pt-4"><p class="font-black xhub-orange text-[10px] md:text-xs uppercase tracking-[0.2em] animate-pulse underline underline-offset-4">History Cleared? Just kidding! 💀</p></div>
             </div>
-            <h2 class="text-4xl font-black mb-6 text-white uppercase tracking-tighter italic">ধরা খেয়ে গেছিস <span class="xhub-orange">দোস্ত!</span></h2>
-            <div class="space-y-6 text-gray-300">
-                <p class="text-xl font-medium leading-relaxed">ভেবেছিলি লগইন করলেই কাজ হয়ে যাবে? এতো সহজ না রে ভাই!</p>
-                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-base italic text-gray-400 leading-relaxed shadow-inner">"ফোন ভর্তি এসব আবর্জনা না রেখে পড়াশোনায় মন দে। ক্যারিয়ার গড়লে রিয়েল লাইফেই অনেক কিছু পাবি।"</div>
-                <div class="pt-4"><p class="font-black xhub-orange text-sm uppercase tracking-[0.2em] animate-pulse">তোর সব রেকর্ড আমার কাছে আছে! 💀</p></div>
-            </div>
-            <button onclick="location.reload()" class="mt-10 w-full xhub-bg-orange text-black font-black py-5 rounded-xl hover:brightness-110 transition-all uppercase text-base tracking-widest shadow-lg shadow-orange-500/20">ভুল হয়ে গেছে, মাফ করে দাও!</button>
+            <button onclick="location.reload()" class="mt-8 w-full xhub-bg-orange text-black font-black py-4 md:py-5 rounded-xl hover:brightness-110 active:scale-95 transition-all uppercase text-sm md:text-base tracking-widest shadow-lg shadow-orange-500/30">তওবা করছি, আর দেখবো না!</button>
         </div>
     </div>
 
@@ -281,17 +299,17 @@
             const switchBtn = document.getElementById('auth-switch-btn');
 
             if(currentMode === 'signup') {
-                title.innerText = "Create Free Account";
-                submitBtn.innerText = "Sign Up";
+                title.innerText = "Create VIP Account";
+                submitBtn.innerText = "Get Started";
                 signupFields.classList.remove('hidden');
-                switchText.innerText = "Already have an account?";
+                switchText.innerText = "Already a member?";
                 switchBtn.innerText = "Login";
             } else {
-                title.innerText = "Login to Premium";
-                submitBtn.innerText = "Login";
+                title.innerText = "Premium Login";
+                submitBtn.innerText = "Access Now";
                 signupFields.classList.add('hidden');
-                switchText.innerText = "Don't have an account?";
-                switchBtn.innerText = "Sign Up";
+                switchText.innerText = "Not a member yet?";
+                switchBtn.innerText = "Join VIP";
             }
         }
 
